@@ -34,16 +34,14 @@ The single highest-leverage decision for a venture-pace V1 is to **not hand-buil
 | **Mobile** | React Native + **Expo (managed) + EAS** + TypeScript | One codebase for iOS/Android. Chosen over Flutter for Gymily because: (1) **one language end-to-end** — share TS types/Zod schemas between app and Fastify API; (2) Supabase Auth/Realtime ride the **reference JS SDK** (Flutter uses the community Dart port); (3) **EAS OTA updates** push JS fixes without store review. Flutter's rendering edge doesn't outweigh these for a maps+feed+realtime app. |
 | **Navigation** | Expo Router (file-based) | Typed routes, deep links (needed for share/notifications later), familiar file-based routing. |
 | **Server state** | TanStack Query | Caching, pagination, infinite scroll, optimistic updates (likes/follows) — built in. |
-| **DB** | **PostgreSQL 15 (Supabase) + PostGIS** | Relational data (users, gyms, follows, posts) is the right fit. PostGIS powers "nearby gyms" with proper geo indexing. Postgres scales to 1M users with read replicas + partitioning. |
+| **DB** | **Neon DB + PostGIS** | Relational data (users, gyms, follows, posts) is the right fit. PostGIS powers "nearby gyms" with proper geo indexing. Postgres scales to 1M users with read replicas + partitioning. |
 | **Auth** | **Supabase Auth (GoTrue)** | Ships Google OAuth, email/password, email verification, password reset, JWT sessions, account deletion. Building this securely by hand is weeks of work and a liability. JWTs are standard — portable later. |
 | **Custom backend** | **Fastify + TypeScript (Node.js)** | A lightweight, TS-native JSON API server. Hosts logic that doesn't belong in the client or in raw SQL: feed ranking, presence aggregation, geo search orchestration, webhooks, rate limiting. Deployed on Fly.io / Railway / Render (containerized Node). |
-| **Realtime** | **Supabase Realtime** (Phase 4: + Redis) | V1 presence/counts via Realtime Presence + Postgres CDC. Documented migration to **Redis (TTL keys + pub/sub)** when concurrent connections get expensive. |
 | **Maps (render)** | **Mapbox** (`@rnmapbox/maps`) | Cheaper at scale than Google, excellent RN SDK with **built-in marker clustering** and vector tiles. Renders the map, markers, and clusters. |
 | **Gym search (data)** | **Google Places API** | Best-in-class POI/place data for finding/seeding gyms (name, address, lat/lng, place_id). Used for gym search + autocomplete and to seed the curated (initially metro-focused, nationally open) gym DB. Hybrid: Google supplies gym *data*, Mapbox *renders* it. |
-| **Storage** | **Supabase Storage** (S3-compatible) → CDN | Images (avatars, posts) with signed uploads + image transforms. Migration path to **Cloudflare R2** (zero egress) at scale. |
-| **Image pipeline** | Client resize (expo-image-manipulator) + server-side transform | Never upload 12MP originals. Cap dimensions/quality before upload. |
-| **Push** | Expo Notifications (Phase 8) | Unified APNs/FCM via Expo. |
-| **Observability** | Sentry (crash/errors) + host/Supabase logs + PostHog (product analytics) | Phase 8. |
+| **Storage** | Cloudflare R2 | Images (avatars, posts) with signed uploads + image transforms. |
+| **Image pipeline** | Client resize using npm package | Never upload 12MP originals. Cap dimensions/quality before upload. |
+| **Observability** | Google analytics setup for basic events to track users |
 
 ### Why not "self-hosted Node backend with its own Postgres"?
 We'd reimplement GoTrue (auth), Storage signing, and a realtime layer ourselves — the three most error-prone pieces. Supabase collapses ~6–8 weeks of undifferentiated work. Because it's plain Postgres + JWT + S3 semantics, there's **no lock-in we can't escape**: at extreme scale we lift the DB out, keep our schema, and run our own GoTrue/Storage if needed.
@@ -84,7 +82,7 @@ Next.js earns its keep when you have a **web frontend** (SSR, React Server Compo
               └─────────────┬───────────┴─────────────┬───────────┘
                             ▼                          ▼
                  ┌────────────────────────────────────────────┐
-                 │     PostgreSQL 15 + PostGIS (Supabase)       │
+                 │     Neon DB + PostGIS (Supabase)       │
                  │  users · gyms · check_ins · posts · follows  │
                  │  RLS policies · GiST geo index · partitions  │
                  └──────────────────────┬───────────────────────┘
@@ -92,7 +90,7 @@ Next.js earns its keep when you have a **web frontend** (SSR, React Server Compo
                             ┌───────────┴───────────┐
                             ▼                       ▼
                   ┌──────────────────┐   ┌────────────────────────┐
-                  │ Supabase Storage │   │  Redis (Phase 4+)      │
+                  │ Cloudflare R2    │   │  Redis (Not for now)   │
                   │  avatars/posts   │   │ presence TTL · caches  │
                   └──────────────────┘   └────────────────────────┘
 ```
