@@ -19,20 +19,27 @@ Instead, think like a campus social network.
 
 # Recommended Launch Strategy
 
-## Phase 1: One City
+## Nationally available, density-focused seeding
 
-Launch in **Delhi** only.
+Gymily is **nationally available** — anyone in India can sign up and create/join gyms anywhere. There is **no city restriction in the app.**
 
-### Why Delhi?
+The density-first principle below still holds, but as a **seeding and marketing focus**, not a hard gate: we deliberately concentrate early user acquisition in a few high-density pockets so the network feels alive, even though the product is open everywhere.
+
+### Recommended focus metros (seed + market here first)
+
+- Delhi
+- Gurgaon
+- Bangalore
+- Mumbai
+
+### Why focus (even while open nationally)?
 
 - Large concentration of fitness-focused professionals and students
 - High smartphone adoption
-- Dense, diverse gym ecosystem across many neighborhoods
-- Easier community building
-- Easier to visit gyms personally if needed
-- Lower operational complexity
+- Dense, diverse gym ecosystems
+- Easier community building and early retention
 
-The app can still technically work everywhere, but marketing and seeding should focus on Delhi.
+The app works everywhere; marketing and seeding simply prioritize these metros to avoid an empty-feeling network.
 
 ---
 
@@ -172,11 +179,11 @@ If launching Gymily tomorrow:
 
 ### Geography
 
-- Delhi only
+- Nationally available; seed + market focus metros first (Delhi, Gurgaon, Bangalore, Mumbai)
 
 ### Seed Data
 
-- 75–100 gyms
+- 75–100 gyms per focus metro to start
 
 ### Initial User Goal
 
@@ -197,16 +204,16 @@ If launching Gymily tomorrow:
 
 ---
 
-# Long-Term Expansion Strategy
+# Long-Term Marketing-Focus Strategy
 
-Only expand to a second city when:
+The app is open nationally from day one. This is about where to **concentrate marketing effort** next — only widen the marketing focus to a new metro once the current one has:
 
-- Delhi has active daily usage
-- Gym activity counts are meaningful
-- Feed content is self-sustaining
-- Users are inviting friends organically
+- Active daily usage
+- Meaningful gym activity counts
+- Self-sustaining feed content
+- Organic friend invites
 
-### Suggested Expansion Order
+### Suggested Marketing-Focus Order
 
 1. Delhi
 2. Gurgaon
@@ -216,7 +223,7 @@ Only expand to a second city when:
 6. Mumbai
 7. Pune
 
-Expand city-by-city rather than nationwide.
+Concentrate marketing metro-by-metro rather than spreading thin nationwide — even though signups are open everywhere.
 
 ---
 

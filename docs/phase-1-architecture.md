@@ -39,7 +39,7 @@ The single highest-leverage decision for a venture-pace V1 is to **not hand-buil
 | **Custom backend** | **Fastify + TypeScript (Node.js)** | A lightweight, TS-native JSON API server. Hosts logic that doesn't belong in the client or in raw SQL: feed ranking, presence aggregation, geo search orchestration, webhooks, rate limiting. Deployed on Fly.io / Railway / Render (containerized Node). |
 | **Realtime** | **Supabase Realtime** (Phase 4: + Redis) | V1 presence/counts via Realtime Presence + Postgres CDC. Documented migration to **Redis (TTL keys + pub/sub)** when concurrent connections get expensive. |
 | **Maps (render)** | **Mapbox** (`@rnmapbox/maps`) | Cheaper at scale than Google, excellent RN SDK with **built-in marker clustering** and vector tiles. Renders the map, markers, and clusters. |
-| **Gym search (data)** | **Google Places API** | Best-in-class POI/place data for finding/seeding gyms (name, address, lat/lng, place_id). Used for gym search + autocomplete and to seed the curated Delhi gym DB. Hybrid: Google supplies gym *data*, Mapbox *renders* it. |
+| **Gym search (data)** | **Google Places API** | Best-in-class POI/place data for finding/seeding gyms (name, address, lat/lng, place_id). Used for gym search + autocomplete and to seed the curated (initially metro-focused, nationally open) gym DB. Hybrid: Google supplies gym *data*, Mapbox *renders* it. |
 | **Storage** | **Supabase Storage** (S3-compatible) → CDN | Images (avatars, posts) with signed uploads + image transforms. Migration path to **Cloudflare R2** (zero egress) at scale. |
 | **Image pipeline** | Client resize (expo-image-manipulator) + server-side transform | Never upload 12MP originals. Cap dimensions/quality before upload. |
 | **Push** | Expo Notifications (Phase 8) | Unified APNs/FCM via Expo. |
@@ -308,16 +308,16 @@ Sequenced to the 8 phases in the spec; each phase is independently shippable & t
 
 ---
 
-## 7b. Launch & Cold-Start Strategy (Delhi-first)
+## 7b. Launch & Cold-Start Strategy (nationally available)
 
-Per `location.md`, V1 is **density-first, not coverage-first.** The map/feed/"training now" features die in an empty network, so we concentrate everything in **Delhi**.
+Gymily is **nationally available** — anyone in India can sign up, and gyms can be created/joined anywhere. There is **no geo-gate in code**. What `location.md` still teaches us is that presence/feed features depend on **density, not coverage**, so while availability is national, our *seeding and marketing* should concentrate to avoid the "2 users per city, feels empty everywhere" failure mode.
 
-- **Geography:** Delhi only at launch (app works everywhere technically; seeding + marketing focus on Delhi). Expansion order later: Gurgaon → Noida → Faridabad → Bangalore → Mumbai → Pune — only after Delhi has self-sustaining daily activity.
-- **Seed data:** curate **75–100 real gyms** (Cult.fit, Anytime Fitness, serious independent/powerlifting gyms, neighborhood gyms in South Delhi — Saket, Greater Kailash, Hauz Khas, Vasant Vihar, Defence Colony — plus Connaught Place, Rajouri Garden, Punjabi Bagh, Dwarka, Lajpat Nagar). Sourced via **Google Places API** → promoted into `gyms` with `google_place_id`.
+- **Availability:** national — no city restriction in signup, gym search, or the map.
+- **Density tactic (recommended, not enforced):** focus initial seeding + marketing on a few high-density pockets (e.g. metros like Delhi, Gurgaon, Bangalore, Mumbai) so early users find a live network, even though the app is open everywhere.
+- **Seed data:** curate **real gyms nationally** (Cult.fit, Anytime Fitness, serious independent/powerlifting gyms, neighborhood gyms), prioritizing dense metros first. Sourced via **Google Places API** → promoted into `gyms` with `google_place_id`. New gyms anywhere are created on-demand when a user joins a place not yet in our DB.
 - **Artificial density (key UX rule):** never show a gym as "0 members." Seed `member_count` from historical/associated joins so a gym reads e.g. **Members: 42 · Training Now: 3**. This is exactly why the schema splits `gym_members.member_count` (total) from live `check_ins` (active) — the network feels alive before real-time traffic exists.
-- **Targets:** 300–500 users, 20–50 users per major gym. Acquisition concentrated gym-by-gym (5 → 10 → 15 gyms/week), not broad "fitness enthusiast" marketing.
 
-**Engineering implications for V1:** `member_count` must be seedable/denormalized (done in schema); gym detail returns both counts (done in API §5); seed script lives in `supabase/seed.sql` with real Delhi coordinates. No geo-gating needed in code — it's a marketing/seeding focus, so we stay geo-agnostic and cheap.
+**Engineering implications for V1:** `member_count` must be seedable/denormalized (done in schema); gym detail returns both counts (done in API §5); seed script lives in `supabase/seed.sql` and can hold gyms from any city. Staying geo-agnostic is the cheap, correct default — density is achieved through where we *market and seed*, not through code restrictions.
 
 ---
 
@@ -343,7 +343,7 @@ Per `location.md`, V1 is **density-first, not coverage-first.** The map/feed/"tr
 |---|---|---|
 | **Presence accuracy** (ghost check-ins, GPS spoofing) | Core feature credibility | Server-side `expires_at` + heartbeat; optional geofence verify (within gym radius) in Phase 4; rate-limit check-ins |
 | **Realtime cost blowup** | $$ at scale | Counts on-read + short cache, not per-user sockets; Redis migration path documented |
-| **Empty-network cold start** | No gyms/people nearby = dead app | **Delhi-only launch** (§7b); seed 75–100 real gyms via Google Places; artificial `member_count` density so gyms never read "0"; gym-by-gym acquisition |
+| **Empty-network cold start** | No gyms/people nearby = dead app | National availability but **density-focused seeding/marketing** in metros first (§7b); seed real gyms via Google Places; artificial `member_count` so gyms never read "0"; gym-by-gym acquisition |
 | **Supabase lock-in fear** | Strategic | It's plain Postgres + JWT + S3 — exit path documented; keep custom logic in our Next.js layer |
 | **RLS misconfiguration** | Security/data leak | RLS policies reviewed + tested per table; Phase 8 security review; least-privilege service keys |
 | **Image moderation / abuse** | Trust & safety, store policy | Report flow + soft-delete in V1; automated moderation deferred but flagged |
@@ -364,7 +364,7 @@ What Phase 2 will produce on approval: the monorepo scaffold (§6), Supabase pro
 1. ✅ **Mobile:** React Native + Expo + EAS (over Flutter — one TS language end-to-end, reference Supabase JS SDK, OTA updates).
 2. ✅ **Backend:** Supabase (Postgres/PostGIS, Auth, Storage, Realtime) + thin **Fastify** API (over Next.js — mobile-only app, no need for SSR).
 3. ✅ **Maps:** **Mapbox** renders the map/markers/clusters; **Google Places API** supplies gym search + seed data (hybrid).
-4. ✅ **Launch:** **Delhi-only**, density-first; seed 75–100 gyms; split Members (total) vs Training Now (active). See §7b.
+4. ✅ **Launch:** **nationally available** (no geo-gate); density achieved via metro-focused seeding/marketing, not code; split Members (total) vs Training Now (active). See §7b.
 
 **Phase 1 planning is complete.** Approve and I'll begin **Phase 2 — Authentication** (monorepo scaffold, Supabase project + `profiles` migration, auth screens, session persistence, tests).
 ```
