@@ -1,1 +1,47 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+build/
+*.tsbuildinfo
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# expo / react native
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+web-build/
+
+# native build dirs
+apps/mobile/ios/
+apps/mobile/android/
+
+# logs
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# supabase
+supabase/.branches/
+supabase/.temp/
+
+# misc
 graphify-out/
+coverage/

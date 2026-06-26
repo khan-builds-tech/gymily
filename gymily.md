@@ -55,6 +55,8 @@ Those features may come later.
 
 Focus only on V1.
 
+Launch: nationally available; seeding + marketing focus on dense metros first. See location.md.
+
 ---
 
 # V1 CORE FEATURES
@@ -235,45 +237,59 @@ Feed should prioritize:
 
 ---
 
-# TECH STACK
+## Feature 8: Buddy Up
 
-Recommend the best stack.
+Find someone to train with at the same gym.
 
-Current preference:
+- tap "Buddy Up" on a person checked in at your gym
+- they get a notification (accept or reject)
+- if accepted, you're connected for the session
+
+Same gym only. Requests expire after the session. No spam (one pending per person).
+
+See docs/buddy-up.md.
+
+---
+
+# TECH STACK (FINALIZED — see docs/phase-1-architecture.md)
 
 ## Frontend
 
 - React Native
-- Expo
+- Expo + EAS
 - TypeScript
+- Expo Router (navigation)
+- TanStack Query (server state)
 
 ## Backend
 
-- Next.js
-- TypeScript
+- Fastify (Node.js) + TypeScript — thin API for custom logic
+- Supabase platform (Postgres + Auth + Realtime)
 
 ## Database
 
-- PostgreSQL
+- PostgreSQL + PostGIS (Supabase)
 
 ## Maps
 
-- Google Maps or Mapbox
+- Mapbox — renders map, markers, clustering
+- Google Places API — gym search + seed data
 
 ## Storage
 
-- Cloud storage for images
+- Cloudflare R2 — image storage only (avatars, posts)
 
 ## Realtime
 
-- Suggest best option
+- Supabase Realtime (presence, live counts); Redis added at scale
 
 ## Authentication
 
-- Google OAuth
-- Email/password
+- Supabase Auth (GoTrue): Google OAuth + email/password, email verification, password reset, JWT sessions
 
-I want justification for every technology choice.
+## Analytics
+
+- Google Analytics — basic event tracking
 
 ---
 
@@ -283,7 +299,7 @@ Design the project in the following phases.
 
 ---
 
-## Phase 1 — Product & Architecture Planning
+## Phase 1 — Product & Architecture Planning (incl. Auth)
 
 Deliver:
 
@@ -292,27 +308,20 @@ Deliver:
 - folder structure
 - API design
 - development roadmap
+- authentication design (Supabase Auth: Google + email/password, email verification, forgot password, session management, account deletion)
 
-No coding yet.
+No coding yet. See docs/phase-1-architecture.md.
 
 ---
 
-## Phase 2 — Authentication System
+## Phase 2 — Mobile App & Screen Flow
 
 Deliver:
 
-- backend implementation
-- mobile screens
-- database migrations
-- testing plan
+- React Native + Expo app structure
+- high-level screen flow (Map / Feed / Profile, Gym Detail, etc.)
 
-Requirements:
-
-- Google Sign In
-- Email/password signup
-- Forgot password
-- Email verification
-- Session management
+See docs/phase-2-flow.md.
 
 ---
 

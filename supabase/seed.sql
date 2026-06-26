@@ -1,0 +1,3 @@
+-- Gymily dev seed data.
+-- Will hold sample gyms (real coordinates, metro-focused) once the gyms table exists.
+-- Placeholder for now.

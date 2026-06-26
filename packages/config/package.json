@@ -1,0 +1,9 @@
+{
+  "name": "@gymily/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared config (tsconfig base) for Gymily monorepo",
+  "files": [
+    "tsconfig.base.json"
+  ]
+}

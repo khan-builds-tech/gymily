@@ -31,7 +31,7 @@ To transform this base stack into a production-grade social media platform capab
 Raw uploads from smartphone cameras (4K images, 60fps videos) are prohibitively large to stream directly to other users. You must compress and optimize them before they hit Cloudflare R2.
 
 - **Image Optimization:** **`sharp`** (integrated into Fastify or executed via Cloudflare Workers) to strip metadata, compress, resize, and convert images into modern web formats like `.webp`.
-- **Video Transcoding:** **`fluent-ffmpeg` / FFmpeg** to transcode uploaded videos into standard compressed formats (H.264 / AAC inside a `.mp4` container) or segmented streams (HLS/DASH) for modern adaptive streaming.
+- **Video Transcoding:** **`fluent-ffmpeg` / FFmpeg** to transcode uploaded videos to segmented streams (HLS/DASH) for modern adaptive streaming.
 - _Alternative:_ If budget permits, **Cloudflare Stream** and **Cloudflare Images** provide turn-key processing pipelines that automate this directly on top of your storage layer.
 
 ### C. Backend Layer Enhancements (Fastify)
