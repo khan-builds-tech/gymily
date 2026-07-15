@@ -5,6 +5,7 @@ import type { ExpoConfig } from 'expo/config';
 const config: ExpoConfig = {
   name: 'Gymily',
   slug: 'gymily',
+  owner: 'amankhan28',
   version: '0.1.0',
   scheme: 'gymily',
   orientation: 'portrait',
@@ -21,12 +22,26 @@ const config: ExpoConfig = {
     bundler: 'metro',
     output: 'single',
   },
-  plugins: ['expo-router', 'expo-secure-store', 'expo-font', 'expo-web-browser'],
+  plugins: [
+    'expo-router',
+    'expo-secure-store',
+    'expo-font',
+    'expo-web-browser',
+    [
+      'expo-location',
+      {
+        locationWhenInUsePermission: 'Gymily uses your location to find gyms near you.',
+      },
+    ],
+  ],
   experiments: {
     typedRoutes: true,
   },
   extra: {
     apiUrl: process.env.EXPO_PUBLIC_API_URL,
+    eas: {
+      projectId: 'c1e29941-00eb-46c5-9201-fc4b47f9a687',
+    },
   },
 };
 

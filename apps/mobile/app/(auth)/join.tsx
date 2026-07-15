@@ -202,7 +202,7 @@ export default function JoinScreen() {
               <View className="h-px flex-1 bg-white/10" />
             </View>
 
-            <GoogleButton />
+            <GoogleButton onError={setError} />
 
             <Pressable
               className="mt-lg flex-row justify-center"

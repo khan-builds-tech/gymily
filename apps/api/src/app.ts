@@ -9,6 +9,8 @@ import authPlugin from './plugins/auth.js';
 import { healthRoutes } from './routes/health.js';
 import { authRoutes } from './routes/auth.js';
 import { accountRoutes } from './routes/account.js';
+import { gymRoutes } from './routes/gyms.js';
+import { profileRoutes } from './routes/profile.js';
 
 /** Build the Fastify app. Pass an explicit env in tests; defaults to process.env. */
 export async function buildApp(env: Env = loadEnv()): Promise<FastifyInstance> {
@@ -35,6 +37,8 @@ export async function buildApp(env: Env = loadEnv()): Promise<FastifyInstance> {
   await app.register(healthRoutes);
   await app.register(authRoutes, { prefix: '/api' });
   await app.register(accountRoutes, { prefix: '/api' });
+  await app.register(gymRoutes, { prefix: '/api' });
+  await app.register(profileRoutes, { prefix: '/api' });
 
   return app;
 }

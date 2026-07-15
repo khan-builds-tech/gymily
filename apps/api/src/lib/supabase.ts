@@ -22,3 +22,15 @@ export function createAdminClient(env: Env): SupabaseClient {
 export function createAnonClient(env: Env): SupabaseClient {
   return createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, serverOpts);
 }
+
+/**
+ * Anon-keyed client that forwards the caller's own JWT, so RLS and
+ * `auth.uid()` (e.g. inside the `select_gym` RPC) resolve to that user
+ * rather than the service role.
+ */
+export function createUserClient(env: Env, accessToken: string): SupabaseClient {
+  return createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
+    ...serverOpts,
+    global: { headers: { Authorization: `Bearer ${accessToken}` } },
+  });
+}

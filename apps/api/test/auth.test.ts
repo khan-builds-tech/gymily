@@ -12,6 +12,7 @@ const testEnv: Env = {
   SUPABASE_URL: 'http://127.0.0.1:54321',
   SUPABASE_ANON_KEY: 'test-anon-key',
   SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
+  GOOGLE_PLACES_API_KEY: 'test-places-key',
 };
 
 let app: FastifyInstance;

@@ -7,6 +7,7 @@ export interface Profile {
   avatar_url: string | null;
   city: string | null;
   gym_id: string | null;
+  needs_username: boolean;
   created_at: string;
   updated_at: string;
 }

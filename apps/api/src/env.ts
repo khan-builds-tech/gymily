@@ -10,6 +10,9 @@ const envSchema = z.object({
   SUPABASE_ANON_KEY: z.string().min(1),
   /** Service-role key — server-only, bypasses RLS. NEVER ship to the client. */
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  /** Server-only key for the Google Places API (gym search). Optional so the
+   *  API still boots before this is provisioned; /gyms/search 503s until set. */
+  GOOGLE_PLACES_API_KEY: z.string().default(''),
 });
 
 export type Env = z.infer<typeof envSchema>;

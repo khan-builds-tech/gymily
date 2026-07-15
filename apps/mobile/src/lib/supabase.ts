@@ -30,5 +30,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     // No URL-based session detection on native (that's a web/OAuth-redirect concern).
     detectSessionInUrl: false,
+    // PKCE (not implicit) so signInWithOAuth's callback carries a `?code=`
+    // param GoogleButton can exchange, instead of tokens in a URL fragment.
+    flowType: 'pkce',
   },
 });

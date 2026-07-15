@@ -113,7 +113,7 @@ export default function SignInScreen() {
               <View className="h-px flex-1 bg-white/10" />
             </View>
 
-            <GoogleButton />
+            <GoogleButton onError={setError} />
           </ScrollView>
         </KeyboardAvoidingView>
 

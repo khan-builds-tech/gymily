@@ -15,30 +15,57 @@ import {
 } from '@expo-google-fonts/inter';
 import { PlayfairDisplay_700Bold } from '@expo-google-fonts/playfair-display';
 import { AuthProvider, useAuth } from '@/providers/AuthProvider';
+import { useProfile } from '@/hooks/useProfile';
 import { queryClient } from '@/lib/queryClient';
 
 SplashScreen.preventAutoHideAsync();
 
-/** Redirects between the (auth) group and the app based on session state. */
+/**
+ * Redirects between (auth) / (onboarding) / (tabs) based on session + profile
+ * completeness. Onboarding is mandatory: a session without a claimed username
+ * or a gym never reaches the tabs.
+ */
 function AuthGate() {
   const { session, initializing } = useAuth();
+  const { data: profile, isLoading: profileLoading } = useProfile(session);
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
     if (initializing) return;
-    const inAuthGroup = segments[0] === '(auth)';
+    if (session && profileLoading) return;
 
-    if (!session && !inAuthGroup) {
-      router.replace('/(auth)/sign-in');
-    } else if (session && inAuthGroup) {
+    const group = segments[0];
+    const screen = segments[1];
+
+    if (!session) {
+      if (group !== '(auth)') router.replace('/(auth)/sign-in');
+      return;
+    }
+
+    if (profile?.needs_username) {
+      if (!(group === '(onboarding)' && screen === 'claim-username')) {
+        router.replace('/(onboarding)/claim-username');
+      }
+      return;
+    }
+
+    if (!profile?.gym_id) {
+      if (!(group === '(onboarding)' && screen === 'select-gym')) {
+        router.replace('/(onboarding)/select-gym');
+      }
+      return;
+    }
+
+    if (group !== '(tabs)') {
       router.replace('/(tabs)/explore');
     }
-  }, [session, initializing, segments, router]);
+  }, [session, initializing, profile, profileLoading, segments, router]);
 
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0b1326' } }}>
       <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(onboarding)" />
       <Stack.Screen name="(tabs)" />
     </Stack>
   );

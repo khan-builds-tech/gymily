@@ -13,3 +13,4 @@ export interface ApiError {
 
 export * from './auth';
 export * from './profile';
+export * from './gym';

@@ -8,7 +8,7 @@ import {
 import { sendError, sendValidationError } from '../lib/errors.js';
 
 /** Returns true if a profile already owns this (case-insensitive) username. */
-async function usernameTaken(app: FastifyInstance, username: string): Promise<boolean> {
+export async function usernameTaken(app: FastifyInstance, username: string): Promise<boolean> {
   const { data, error } = await app.supabase
     .from('profiles')
     .select('id')
