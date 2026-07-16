@@ -17,6 +17,14 @@ import { PlayfairDisplay_700Bold } from '@expo-google-fonts/playfair-display';
 import { AuthProvider, useAuth } from '@/providers/AuthProvider';
 import { useProfile } from '@/hooks/useProfile';
 import { queryClient } from '@/lib/queryClient';
+import { colors } from '@/theme/colors';
+
+const detailScreenOptions = {
+  headerShown: true,
+  headerStyle: { backgroundColor: colors.background },
+  headerTintColor: colors.textMain,
+  headerShadowVisible: false,
+} as const;
 
 SplashScreen.preventAutoHideAsync();
 
@@ -57,7 +65,10 @@ function AuthGate() {
       return;
     }
 
-    if (group !== '(tabs)') {
+    // Fully onboarded: only pull them out of (auth)/(onboarding) if they're
+    // somehow still there. Any other route (tabs, gym detail, a profile) is
+    // fine — don't pin them to (tabs) specifically.
+    if (group === '(auth)' || group === '(onboarding)') {
       router.replace('/(tabs)/explore');
     }
   }, [session, initializing, profile, profileLoading, segments, router]);
@@ -67,6 +78,10 @@ function AuthGate() {
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(onboarding)" />
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="gym/[id]" options={{ ...detailScreenOptions, title: 'Gym' }} />
+      <Stack.Screen name="gym/change" options={{ ...detailScreenOptions, title: 'Change Gym' }} />
+      <Stack.Screen name="user/[username]" options={{ ...detailScreenOptions, title: 'Profile' }} />
+      <Stack.Screen name="profile-edit" options={{ ...detailScreenOptions, title: 'Edit Profile' }} />
     </Stack>
   );
 }

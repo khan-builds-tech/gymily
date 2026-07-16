@@ -45,6 +45,29 @@ export interface SelectGymResult {
   gym_id: string;
 }
 
+/**
+ * Gym detail as read directly from public.gyms for the gym detail screen.
+ * No lat/lng — there's no map to plot them on yet (Phase 5).
+ */
+export interface GymDetail {
+  id: string;
+  name: string;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  member_count: number;
+  verified: boolean;
+}
+
+/** One row in a gym's member list. */
+export interface GymMember {
+  id: string;
+  username: string;
+  full_name: string;
+  avatar_url: string | null;
+}
+
 export const claimUsernameSchema = z.object({
   username: usernameSchema,
 });

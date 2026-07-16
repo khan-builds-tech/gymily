@@ -1,7 +1,12 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { selectGymSchema, type GymSearchResult, type SelectGymResult } from '@gymily/types';
 import { sendError, sendValidationError } from '../lib/errors.js';
 import { createUserClient } from '../lib/supabase.js';
+
+/** Bearer token from an already-`app.authenticate`d request. */
+function getBearerToken(req: FastifyRequest): string {
+  return req.headers.authorization!.slice('Bearer '.length).trim();
+}
 
 const PLACES_SEARCH_URL = 'https://places.googleapis.com/v1/places:searchText';
 const PLACES_FIELD_MASK =
@@ -95,8 +100,7 @@ export async function gymRoutes(app: FastifyInstance) {
     const parsed = selectGymSchema.safeParse(req.body);
     if (!parsed.success) return sendValidationError(reply, parsed.error);
 
-    const token = req.headers.authorization!.slice('Bearer '.length).trim();
-    const userClient = createUserClient(app.config, token);
+    const userClient = createUserClient(app.config, getBearerToken(req));
     const { data, error } = await userClient.rpc('select_gym', {
       p_google_place_id: parsed.data.google_place_id,
       p_name: parsed.data.name,
@@ -115,4 +119,21 @@ export async function gymRoutes(app: FastifyInstance) {
     const result: SelectGymResult = { gym_id: data as string };
     return reply.send(result);
   });
+
+  // POST /api/gyms/:id/join — switch to an already-known gym (no Places
+  // upsert, unlike /gyms/select) via the join_gym RPC.
+  app.post<{ Params: { id: string } }>(
+    '/gyms/:id/join',
+    { preHandler: app.authenticate },
+    async (req, reply) => {
+      const userClient = createUserClient(app.config, getBearerToken(req));
+      const { error } = await userClient.rpc('join_gym', { p_gym_id: req.params.id });
+
+      if (error) {
+        return sendError(reply, 500, 'join_gym_failed', error.message);
+      }
+
+      return reply.code(204).send();
+    },
+  );
 }

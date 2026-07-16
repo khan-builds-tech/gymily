@@ -11,3 +11,14 @@ export interface Profile {
   created_at: string;
   updated_at: string;
 }
+
+/** Another user's profile, as shown on their public profile screen. */
+export interface PublicProfile {
+  id: string;
+  username: string;
+  full_name: string;
+  bio: string | null;
+  avatar_url: string | null;
+  city: string | null;
+  gym: { id: string; name: string; city: string | null } | null;
+}
