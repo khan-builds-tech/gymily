@@ -106,20 +106,29 @@ export default function GymDetailScreen() {
         keyExtractor={(item) => item.id}
         contentContainerClassName="px-md py-md gap-sm"
         refreshing={membersLoading}
-        renderItem={({ item }: { item: GymMember }) => (
-          <Pressable
-            onPress={() => router.push(`/user/${item.username}`)}
-            className="flex-row items-center gap-sm rounded-md border border-white/10 bg-surface-container-low px-md py-md active:opacity-90"
-          >
-            <Icon name="person" size={20} color={colors.textMuted} />
-            <View>
-              <Text className="font-sans-semibold text-text-main">{item.full_name}</Text>
-              <Text variant="body-sm" className="text-text-muted/70">
-                @{item.username}
-              </Text>
-            </View>
-          </Pressable>
-        )}
+        renderItem={({ item }: { item: GymMember }) => {
+          const isMe = item.id === myProfile?.id;
+          return (
+            <Pressable
+              disabled={isMe}
+              onPress={() =>
+                router.push({ pathname: '/user/[username]', params: { username: item.username, fromGymId: id } })
+              }
+              className="flex-row items-center gap-sm rounded-md border border-white/10 bg-surface-container-low px-md py-md active:opacity-90 disabled:opacity-70"
+            >
+              <Icon name="person" size={20} color={colors.textMuted} />
+              <View>
+                <Text className="font-sans-semibold text-text-main">
+                  {item.full_name}
+                  {isMe ? ' (You)' : ''}
+                </Text>
+                <Text variant="body-sm" className="text-text-muted/70">
+                  @{item.username}
+                </Text>
+              </View>
+            </Pressable>
+          );
+        }}
         ListEmptyComponent={
           !membersLoading ? (
             <Text variant="body-sm" className="text-center text-text-muted/60">
