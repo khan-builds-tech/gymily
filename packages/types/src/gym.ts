@@ -68,6 +68,21 @@ export interface GymMember {
   avatar_url: string | null;
 }
 
+/** The caller's own active check-in ("Training Now"), Phase 4 — null if not checked in. */
+export interface CheckInStatus {
+  gym_id: string;
+  checked_in_at: string;
+}
+
+/** One person currently checked in at a gym — "Training Now", not the full member list. */
+export interface ActiveMember {
+  id: string;
+  username: string;
+  full_name: string;
+  avatar_url: string | null;
+  checked_in_at: string;
+}
+
 export const claimUsernameSchema = z.object({
   username: usernameSchema,
 });

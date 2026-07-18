@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { useGymDetail, useGymMembers } from '@/hooks/useGymDetail';
 import { useProfile } from '@/hooks/useProfile';
+import { useActiveMembers } from '@/hooks/useActiveMembers';
+import { useCheckInStatus } from '@/hooks/useCheckInStatus';
 import { useAuth } from '@/providers/AuthProvider';
 import { apiFetch, ApiRequestError } from '@/lib/api';
 import { colors } from '@/theme/colors';
@@ -21,10 +23,14 @@ export default function GymDetailScreen() {
   const { data: gym, isLoading: gymLoading } = useGymDetail(id);
   const { data: members, isLoading: membersLoading } = useGymMembers(id);
   const { data: myProfile } = useProfile(session);
+  const { data: activeMembers } = useActiveMembers(id);
+  const { data: checkInStatus } = useCheckInStatus(session);
   const [joining, setJoining] = useState(false);
+  const [checkingIn, setCheckingIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const isMyGym = myProfile?.gym_id === id;
+  const isCheckedInHere = checkInStatus?.gym_id === id;
 
   async function handleJoin() {
     setError(null);
@@ -36,6 +42,24 @@ export default function GymDetailScreen() {
       setError(err instanceof ApiRequestError ? err.message : 'Could not join this gym.');
     } finally {
       setJoining(false);
+    }
+  }
+
+  async function handleCheckInToggle() {
+    setError(null);
+    setCheckingIn(true);
+    try {
+      if (isCheckedInHere) {
+        await apiFetch('/api/checkout', { method: 'POST' });
+      } else {
+        await apiFetch(`/api/gyms/${id}/checkin`, { method: 'POST' });
+      }
+      await queryClient.invalidateQueries({ queryKey: ['check-in-status', session?.user.id] });
+      await queryClient.invalidateQueries({ queryKey: ['gym-active-members', id] });
+    } catch (err) {
+      setError(err instanceof ApiRequestError ? err.message : 'Could not update your check-in.');
+    } finally {
+      setCheckingIn(false);
     }
   }
 
@@ -76,9 +100,7 @@ export default function GymDetailScreen() {
             <Text variant="label" className="text-text-muted/60">
               Training Now
             </Text>
-            <Text variant="body-sm" className="text-text-muted/60">
-              Coming soon
-            </Text>
+            <Text className="font-sans-semibold text-text-main">{activeMembers?.length ?? 0}</Text>
           </View>
         </View>
 
@@ -88,14 +110,17 @@ export default function GymDetailScreen() {
           </Text>
         ) : null}
 
-        {!isMyGym ? (
+        {isMyGym ? (
           <Button
-            label="Join this gym"
-            loading={joining}
-            onPress={handleJoin}
-            className="mt-md"
+            label={isCheckedInHere ? 'Check Out' : 'Check In'}
+            variant={isCheckedInHere ? 'ghost' : 'primary'}
+            loading={checkingIn}
+            onPress={handleCheckInToggle}
+            className={isCheckedInHere ? 'mt-md border border-error/30' : 'mt-md'}
           />
-        ) : null}
+        ) : (
+          <Button label="Join this gym" loading={joining} onPress={handleJoin} className="mt-md" />
+        )}
       </View>
 
       <Text variant="label" className="px-md text-text-muted/60">

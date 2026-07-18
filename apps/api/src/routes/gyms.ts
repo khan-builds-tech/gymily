@@ -136,4 +136,44 @@ export async function gymRoutes(app: FastifyInstance) {
       return reply.code(204).send();
     },
   );
+
+  // POST /api/gyms/:id/checkin — start (or move) live presence ("Training Now").
+  app.post<{ Params: { id: string } }>(
+    '/gyms/:id/checkin',
+    { preHandler: app.authenticate },
+    async (req, reply) => {
+      const userClient = createUserClient(app.config, getBearerToken(req));
+      const { error } = await userClient.rpc('check_in', { p_gym_id: req.params.id });
+
+      if (error) {
+        return sendError(reply, 500, 'checkin_failed', error.message);
+      }
+
+      return reply.code(204).send();
+    },
+  );
+
+  // POST /api/checkin/heartbeat — keep the caller's active check-in alive.
+  app.post('/checkin/heartbeat', { preHandler: app.authenticate }, async (req, reply) => {
+    const userClient = createUserClient(app.config, getBearerToken(req));
+    const { error } = await userClient.rpc('checkin_heartbeat');
+
+    if (error) {
+      return sendError(reply, 500, 'heartbeat_failed', error.message);
+    }
+
+    return reply.code(204).send();
+  });
+
+  // POST /api/checkout — end the caller's active check-in.
+  app.post('/checkout', { preHandler: app.authenticate }, async (req, reply) => {
+    const userClient = createUserClient(app.config, getBearerToken(req));
+    const { error } = await userClient.rpc('check_out');
+
+    if (error) {
+      return sendError(reply, 500, 'checkout_failed', error.message);
+    }
+
+    return reply.code(204).send();
+  });
 }

@@ -32,7 +32,13 @@ interface RequestOptions {
 export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = 'GET', body, auth = true } = options;
 
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  // Only set Content-Type when there's actually a body — Fastify's JSON
+  // parser rejects a request that declares application/json but sends an
+  // empty body (every no-payload POST: join, checkin, heartbeat, checkout...).
+  const headers: Record<string, string> = {};
+  if (body !== undefined) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (auth) {
     const {

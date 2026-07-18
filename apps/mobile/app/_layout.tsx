@@ -24,6 +24,11 @@ const detailScreenOptions = {
   headerStyle: { backgroundColor: colors.background },
   headerTintColor: colors.textMain,
   headerShadowVisible: false,
+  // Without this, iOS falls back to the previous screen's title for the back
+  // button label — since (tabs) has no title set, that literally shows
+  // "(tabs)". `headerBackTitle: ''` alone isn't reliable on this RN Navigation
+  // version; `headerBackButtonDisplayMode: 'minimal'` is the documented fix.
+  headerBackButtonDisplayMode: 'minimal',
 } as const;
 
 SplashScreen.preventAutoHideAsync();
