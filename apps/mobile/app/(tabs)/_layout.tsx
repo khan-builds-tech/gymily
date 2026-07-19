@@ -1,8 +1,14 @@
 import { Tabs } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '@/theme/colors';
+import { useAuth } from '@/providers/AuthProvider';
+import { useIncomingBuddyRequests } from '@/hooks/useIncomingBuddyRequests';
 
 export default function TabsLayout() {
+  const { session } = useAuth();
+  const { data: incomingRequests } = useIncomingBuddyRequests(session);
+  const pendingCount = incomingRequests?.length ?? 0;
+
   return (
     <Tabs
       screenOptions={{
@@ -35,6 +41,7 @@ export default function TabsLayout() {
         name="training"
         options={{
           title: 'Training',
+          tabBarBadge: pendingCount > 0 ? pendingCount : undefined,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="fitness-center" size={size} color={color} />
           ),
