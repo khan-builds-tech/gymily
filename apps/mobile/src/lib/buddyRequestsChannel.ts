@@ -36,3 +36,16 @@ export function subscribeToOutgoingBuddyRequests(userId: string): () => void {
     unsubBuddies();
   };
 }
+
+/**
+ * Live "who's paired with whom" for a gym's roster — buddy_requests has no
+ * gym_id column, so this can't be filtered server-side; it invalidates on
+ * any buddy_requests change and lets the query itself re-scope by gym.
+ */
+export function subscribeToGymBuddyPairs(gymId: string): () => void {
+  return subscribeToRealtimeInvalidation(
+    `gym:${gymId}:buddy-pairs`,
+    { event: '*', schema: 'public', table: 'buddy_requests' },
+    ['gym-buddy-pairs', gymId],
+  );
+}

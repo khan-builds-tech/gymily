@@ -15,6 +15,7 @@ import { useActiveMembers } from '@/hooks/useActiveMembers';
 import { useIncomingBuddyRequests } from '@/hooks/useIncomingBuddyRequests';
 import { useOutgoingPendingTargets } from '@/hooks/useOutgoingPendingTargets';
 import { useCurrentBuddies } from '@/hooks/useCurrentBuddies';
+import { useGymBuddyPairs } from '@/hooks/useGymBuddyPairs';
 import { apiFetch, ApiRequestError } from '@/lib/api';
 import { colors } from '@/theme/colors';
 
@@ -77,6 +78,7 @@ export default function TrainingScreen() {
   const { data: currentBuddies } = useCurrentBuddies(session);
   const currentBuddyIds = new Set(currentBuddies?.map((b) => b.id) ?? []);
   const hasBuddy = currentBuddyIds.size > 0;
+  const { data: gymBuddyPairs } = useGymBuddyPairs(myProfile?.gym_id ?? undefined);
   const [sendingTo, setSendingTo] = useState<string | null>(null);
   const [respondingTo, setRespondingTo] = useState<string | null>(null);
   const [finishing, setFinishing] = useState(false);
@@ -257,10 +259,11 @@ export default function TrainingScreen() {
         refreshing={activeLoading}
         renderItem={({ item }: { item: ActiveMember }) => {
           const requested = outgoingPendingTargets?.has(item.id) ?? false;
+          const pairedWith = gymBuddyPairs?.get(item.id);
           return (
             <PersonRow
               fullName={item.full_name}
-              username={item.username}
+              username={pairedWith ? `${item.username} · training with ${pairedWith.full_name}` : item.username}
               onPress={() =>
                 router.push({
                   pathname: '/user/[username]',
@@ -268,7 +271,7 @@ export default function TrainingScreen() {
                 })
               }
               trailing={
-                hasBuddy ? null : (
+                hasBuddy || pairedWith ? null : (
                   <Button
                     label={requested ? 'Requested' : 'Buddy Up'}
                     variant={requested ? 'ghost' : 'social'}

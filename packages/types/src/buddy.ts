@@ -29,3 +29,9 @@ export interface CurrentBuddy {
   full_name: string;
   avatar_url: string | null;
 }
+
+/** Who a given gym member is currently paired with, for third-party viewers of the roster. */
+export interface GymBuddyPair {
+  user_id: string;
+  buddy: CurrentBuddy;
+}
