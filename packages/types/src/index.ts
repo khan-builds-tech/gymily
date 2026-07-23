@@ -15,3 +15,5 @@ export * from './auth';
 export * from './profile';
 export * from './gym';
 export * from './buddy';
+export * from './post';
+export * from './follow';

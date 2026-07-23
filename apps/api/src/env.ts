@@ -13,6 +13,13 @@ const envSchema = z.object({
   /** Server-only key for the Google Places API (gym search). Optional so the
    *  API still boots before this is provisioned; /gyms/search 503s until set. */
   GOOGLE_PLACES_API_KEY: z.string().default(''),
+  /** Cloudflare R2 (post images). Optional so the API still boots before
+   *  this is provisioned; /posts/upload-url 503s until set. */
+  R2_ACCOUNT_ID: z.string().default(''),
+  R2_ACCESS_KEY_ID: z.string().default(''),
+  R2_SECRET_ACCESS_KEY: z.string().default(''),
+  R2_BUCKET: z.string().default(''),
+  R2_PUBLIC_URL: z.string().default(''),
 });
 
 export type Env = z.infer<typeof envSchema>;
