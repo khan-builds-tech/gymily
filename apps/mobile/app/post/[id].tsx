@@ -24,16 +24,26 @@ import { useToggleLike } from '@/hooks/useToggleLike';
 import { apiFetch, ApiRequestError } from '@/lib/api';
 import { colors } from '@/theme/colors';
 
-function CommentRow({ comment, onDelete }: { comment: PostComment; onDelete?: () => void }) {
+function CommentRow({
+  comment,
+  onPressAuthor,
+  onDelete,
+}: {
+  comment: PostComment;
+  onPressAuthor: () => void;
+  onDelete?: () => void;
+}) {
   return (
     <View className="flex-row items-start gap-sm px-lg py-sm">
-      <Icon name="person" size={18} color={colors.textMuted} />
-      <View className="flex-1">
+      <Pressable onPress={onPressAuthor} hitSlop={8}>
+        <Icon name="person" size={18} color={colors.textMuted} />
+      </Pressable>
+      <Pressable onPress={onPressAuthor} className="flex-1">
         <Text variant="body-sm" className="text-text-muted/70">
           @{comment.author_username}
         </Text>
         <Text variant="body">{comment.body}</Text>
-      </View>
+      </Pressable>
       {onDelete ? (
         <Pressable onPress={onDelete} hitSlop={8}>
           <Icon name="close" size={16} color={colors.textMuted} />
@@ -108,7 +118,10 @@ export default function PostDetailScreen() {
           ListHeaderComponent={
             <View className="gap-sm px-lg py-md">
               <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center gap-sm">
+                <Pressable
+                  onPress={() => router.push(`/user/${post.author.username}`)}
+                  className="flex-row items-center gap-sm active:opacity-70"
+                >
                   <Icon name="person" size={20} color={colors.textMuted} />
                   <View>
                     <Text className="font-sans-semibold text-text-main">{post.author.full_name}</Text>
@@ -116,7 +129,7 @@ export default function PostDetailScreen() {
                       @{post.author.username}
                     </Text>
                   </View>
-                </View>
+                </Pressable>
                 {isOwnPost ? (
                   <Pressable onPress={confirmDeletePost} disabled={deletingPost} hitSlop={8}>
                     <Icon name="delete-outline" size={20} color={colors.textMuted} />
@@ -158,6 +171,7 @@ export default function PostDetailScreen() {
           renderItem={({ item }) => (
             <CommentRow
               comment={item}
+              onPressAuthor={() => router.push(`/user/${item.author_username}`)}
               onDelete={item.author_id === myId ? () => deleteComment(item.id) : undefined}
             />
           )}

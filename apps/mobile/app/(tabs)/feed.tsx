@@ -13,10 +13,12 @@ import { colors } from '@/theme/colors';
 function PostCard({
   post,
   onPress,
+  onPressAuthor,
   onToggleLike,
 }: {
   post: FeedPost;
   onPress: () => void;
+  onPressAuthor: () => void;
   onToggleLike: (post: FeedPost) => void;
 }) {
   return (
@@ -24,7 +26,7 @@ function PostCard({
       onPress={onPress}
       className="gap-sm rounded-md border border-white/10 bg-surface-container-low px-md py-md active:opacity-90"
     >
-      <View className="flex-row items-center gap-sm">
+      <Pressable onPress={onPressAuthor} className="flex-row items-center gap-sm active:opacity-70">
         <Icon name="person" size={20} color={colors.textMuted} />
         <View>
           <Text className="font-sans-semibold text-text-main">{post.author_full_name}</Text>
@@ -32,7 +34,7 @@ function PostCard({
             @{post.author_username}
           </Text>
         </View>
-      </View>
+      </Pressable>
 
       {post.body ? <Text variant="body">{post.body}</Text> : null}
 
@@ -98,6 +100,7 @@ export default function FeedScreen() {
             <PostCard
               post={item}
               onPress={() => router.push(`/post/${item.id}`)}
+              onPressAuthor={() => router.push(`/user/${item.author_username}`)}
               onToggleLike={(post) => toggleLike({ postId: post.id, liked: post.liked_by_me })}
             />
           )}
