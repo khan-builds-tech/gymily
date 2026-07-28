@@ -1,5 +1,6 @@
--- Phase 5 (Feed) — `follows`, the prerequisite for "gym posts + people you
--- follow" (docs/phase-2-flow.md). Step 1 of the Feed scope in docs/feed.md.
+-- Phase 7 (Following) — `follows`, built ahead of its original sequencing
+-- (docs/phase-1-architecture.md has Follows after Feed) because Feed v1
+-- (docs/feed.md) needs it for "gym posts + people you follow".
 
 create table public.follows (
   follower_id  uuid not null references public.profiles (id) on delete cascade,

@@ -20,6 +20,11 @@ const envSchema = z.object({
   R2_SECRET_ACCESS_KEY: z.string().default(''),
   R2_BUCKET: z.string().default(''),
   R2_PUBLIC_URL: z.string().default(''),
+  /** Override the derived R2 endpoint (`https://<account>.r2.cloudflarestorage.com`)
+   *  and default region ('auto') — for pointing at an S3-compatible endpoint
+   *  other than R2 in local dev (e.g. Supabase Storage's local S3 gateway). */
+  R2_ENDPOINT: z.string().default(''),
+  R2_REGION: z.string().default('auto'),
 });
 
 export type Env = z.infer<typeof envSchema>;

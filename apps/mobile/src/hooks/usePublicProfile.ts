@@ -12,7 +12,9 @@ export function usePublicProfile(username: string | undefined) {
         // Explicit FK hint: profiles<->gyms has two relationships
         // (profiles.gym_id -> gyms.id, and gyms.created_by -> profiles.id) —
         // PostgREST can't infer which one without this.
-        .select('id, username, full_name, bio, avatar_url, city, gym:gyms!profiles_gym_id_fkey(id, name, city)')
+        .select(
+          'id, username, full_name, bio, avatar_url, city, followers_count, following_count, gym:gyms!profiles_gym_id_fkey(id, name, city)',
+        )
         .eq('username', username!)
         .single();
       if (error) throw error;

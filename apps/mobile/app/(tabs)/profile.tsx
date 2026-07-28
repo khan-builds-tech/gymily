@@ -50,6 +50,11 @@ export default function ProfileScreen() {
         <Text variant="body-sm" className="mt-xs">
           @{profile?.username} · {session?.user.email}
         </Text>
+        {profile ? (
+          <Text variant="label" className="mt-xs text-text-muted/60">
+            {profile.followers_count} Followers · {profile.following_count} Following
+          </Text>
+        ) : null}
 
         {profile?.bio ? (
           <Text variant="body-sm" className="mt-md">

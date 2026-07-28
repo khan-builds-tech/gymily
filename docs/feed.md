@@ -1,13 +1,19 @@
 # Gymily — Feed Feature (Scope)
 
-Posts from people you follow and from your gym, with likes and comments.
-Includes Follow/Unfollow as a prerequisite (no `follows` table exists yet).
+All posts, with likes and comments, plus Follow/Unfollow as a standalone
+social feature (profile counts) — following no longer gates Feed visibility.
 
 Decisions locked in for v1 (asked and answered 2026-07-23):
 
-- **Feed = gym posts ∪ followed-people posts** — build `follows` now, not gym-only.
 - **Text + single image per post** — needs an R2 presigned-upload route.
 - **Likes + comments** — both ship in v1, not likes-only.
+
+**Update (2026-07-29):** Feed visibility was originally scoped as "gym posts
+∪ followed-people posts" (`get_feed` filtered on `gym_id`/`follows`). Changed
+to show **every post**, paginated 5 at a time — see
+`20260729090000_feed_show_all_posts.sql`. `follows` still exists and still
+gates nothing except the Follow/Unfollow button + follower/following counts
+on profiles.
 
 Deliberate v1 narrowing (flag for later, same spirit as `docs/parked-for-later.md`):
 

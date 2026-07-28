@@ -16,6 +16,23 @@ export interface FeedPost {
   liked_by_me: boolean;
 }
 
+/** A single post + author, as read directly from posts for the post detail screen. */
+export interface PostDetail {
+  id: string;
+  author_id: string;
+  gym_id: string | null;
+  body: string | null;
+  image_url: string | null;
+  like_count: number;
+  comment_count: number;
+  created_at: string;
+  author: {
+    username: string;
+    full_name: string;
+    avatar_url: string | null;
+  };
+}
+
 export const createPostSchema = z
   .object({
     body: z.string().trim().min(1).max(2000).optional(),

@@ -33,6 +33,12 @@ const config: ExpoConfig = {
         locationWhenInUsePermission: 'Gymily uses your location to find gyms near you.',
       },
     ],
+    [
+      'expo-image-picker',
+      {
+        photosPermission: 'Gymily needs access to your photos to attach one to a post.',
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,

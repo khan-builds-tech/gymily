@@ -3,19 +3,26 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Text } from '@/components/ui/Text';
 import { Icon } from '@/components/ui/Icon';
+import { Button } from '@/components/ui/Button';
+import { useAuth } from '@/providers/AuthProvider';
 import { usePublicProfile } from '@/hooks/usePublicProfile';
+import { useFollowStatus, useToggleFollow } from '@/hooks/useFollow';
 import { colors } from '@/theme/colors';
 
-// Read-only view of another user's profile — no edit/follow controls (follows
-// are Phase 7). Reached today only via a gym's member list.
+// Another user's profile — read-only, plus a Follow/Unfollow control.
+// Reached today via a gym's member list or a Feed post's author.
 export default function PublicProfileScreen() {
   const { username, fromGymId } = useLocalSearchParams<{ username: string; fromGymId?: string }>();
   const router = useRouter();
+  const { session } = useAuth();
   const { data: profile, isLoading } = usePublicProfile(username);
+  const { data: isFollowing } = useFollowStatus(profile?.id, session);
+  const { mutate: toggleFollow, isPending: followPending } = useToggleFollow(session);
   // Anyone in a gym's member list trains at that gym by definition — if we
   // got here from that same gym's detail screen, tapping "Trains at X" should
   // go back to it, not push a duplicate copy of the screen we just left.
   const cameFromThisGym = profile?.gym?.id === fromGymId;
+  const isOwnProfile = profile?.id === session?.user.id;
 
   if (isLoading) {
     return (
@@ -45,6 +52,20 @@ export default function PublicProfileScreen() {
         <Text variant="body-sm" className="text-text-muted/70">
           @{profile.username}
         </Text>
+
+        <Text variant="label" className="mt-sm text-text-muted/60">
+          {profile.followers_count} Followers · {profile.following_count} Following
+        </Text>
+
+        {!isOwnProfile ? (
+          <Button
+            label={isFollowing ? 'Following' : 'Follow'}
+            variant={isFollowing ? 'social' : 'primary'}
+            loading={followPending}
+            onPress={() => toggleFollow({ targetId: profile.id, following: isFollowing ?? false })}
+            className="mt-md px-lg"
+          />
+        ) : null}
 
         {profile.bio ? (
           <Text variant="body-sm" className="mt-md text-center">

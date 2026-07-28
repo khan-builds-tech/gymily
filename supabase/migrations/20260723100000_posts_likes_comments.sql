@@ -1,4 +1,4 @@
--- Phase 5 (Feed) — `posts`, `post_likes`, `post_comments`, and the `get_feed`
+-- Phase 6 (Feed) — `posts`, `post_likes`, `post_comments`, and the `get_feed`
 -- read function. Step 2 of the Feed scope in docs/feed.md.
 --
 -- Deviates from docs/feed.md in one place: no `updated_at` column on posts.

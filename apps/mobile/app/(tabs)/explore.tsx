@@ -3,7 +3,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/Text';
 import { Brandmark } from '@/components/Brandmark';
 
-// Placeholder — the social feed (Phase 6) lands here.
+// Placeholder — Mapbox gym discovery (Phase 5) lands here. The social feed
+// (originally slated for this tab) shipped as its own Feed tab instead
+// (docs/feed.md), so Map keeps this slot.
 export default function ExploreScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={['top']}>
@@ -15,7 +17,7 @@ export default function ExploreScreen() {
           Explore
         </Text>
         <Text variant="body-sm" className="mt-sm text-center">
-          The social feed lands here in Phase 6.
+          Gym discovery on a map lands here in Phase 5.
         </Text>
       </View>
     </SafeAreaView>

@@ -8,6 +8,8 @@ export interface Profile {
   city: string | null;
   gym_id: string | null;
   needs_username: boolean;
+  followers_count: number;
+  following_count: number;
   created_at: string;
   updated_at: string;
 }
@@ -20,5 +22,7 @@ export interface PublicProfile {
   bio: string | null;
   avatar_url: string | null;
   city: string | null;
+  followers_count: number;
+  following_count: number;
   gym: { id: string; name: string; city: string | null } | null;
 }

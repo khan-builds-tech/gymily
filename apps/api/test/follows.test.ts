@@ -18,6 +18,8 @@ const testEnv: Env = {
   R2_SECRET_ACCESS_KEY: '',
   R2_BUCKET: '',
   R2_PUBLIC_URL: '',
+  R2_ENDPOINT: '',
+  R2_REGION: 'auto',
 };
 
 let app: FastifyInstance;

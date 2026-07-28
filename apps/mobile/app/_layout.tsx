@@ -87,6 +87,8 @@ function AuthGate() {
       <Stack.Screen name="gym/change" options={{ ...detailScreenOptions, title: 'Change Gym' }} />
       <Stack.Screen name="user/[username]" options={{ ...detailScreenOptions, title: 'Profile' }} />
       <Stack.Screen name="profile-edit" options={{ ...detailScreenOptions, title: 'Edit Profile' }} />
+      <Stack.Screen name="post/[id]" options={{ ...detailScreenOptions, title: 'Post' }} />
+      <Stack.Screen name="post/create" options={{ ...detailScreenOptions, title: 'New Post' }} />
     </Stack>
   );
 }

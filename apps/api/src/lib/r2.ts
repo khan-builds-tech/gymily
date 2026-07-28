@@ -11,8 +11,12 @@ const EXTENSION_BY_CONTENT_TYPE: Record<string, string> = {
 
 function client(env: Env): S3Client {
   return new S3Client({
-    region: 'auto',
-    endpoint: `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    region: env.R2_REGION,
+    endpoint: env.R2_ENDPOINT || `https://${env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    // Path-style (bucket in the path, not a subdomain) works against R2 and
+    // is required by S3-compatible gateways used in local dev (e.g.
+    // Supabase Storage's local S3 endpoint).
+    forcePathStyle: true,
     credentials: {
       accessKeyId: env.R2_ACCESS_KEY_ID,
       secretAccessKey: env.R2_SECRET_ACCESS_KEY,
